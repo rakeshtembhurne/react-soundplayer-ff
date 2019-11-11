@@ -4,6 +4,7 @@
     flex-grow: 1;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 .waveform-container {
     max-width: 100%;
