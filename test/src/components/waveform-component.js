@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import './waveform.styles.css';
 
@@ -10,7 +11,8 @@ class Waveform extends React.Component {
         super(props);
         this.state = {
             bars: []
-        }
+        };
+        this.onSeek = this.onSeek.bind(this);
     }
 
     componentDidMount() {
@@ -63,33 +65,56 @@ class Waveform extends React.Component {
             .catch(console.log);
     }
 
+    onSeek(e) {
+        e.persist();
+
+        const { offsetWidth } = ReactDOM.findDOMNode(this);
+        const xPos = (e.pageX - e.target.getBoundingClientRect().left) / offsetWidth;
+
+        this.props.onSeekTrack(xPos);
+    }
+
     render() {
         let { spaceBetweenBars, progress } = this.props;
         if (!spaceBetweenBars) {
             spaceBetweenBars = SPACE_BETWEEN_BARS;
         }
         return (
-            <div className="ff-waveform">
-                <svg viewBox="0 0 100 100" className="waveform-container" preserveAspectRatio="none">
-                    <rect className="waveform-bg" x="0" y="0" />
-                    <rect id="waveform-progress" className="waveform-progress" x="0" y="0" height="100" width={progress || 0}/>
-                </svg>
-                <svg height="0" width="0">
-                    <defs>
-                        <clipPath id="waveform-mask">
-                            {this.state.bars.map( ({ bucketSVGHeight, bucketSVGWidth, index }) => (
-                                <rect
-                                    key={index}
-                                    x={ bucketSVGWidth * index + spaceBetweenBars / 2.0 }
-                                    y={(100 - bucketSVGHeight) / 2.0}
-                                    width={bucketSVGWidth - spaceBetweenBars}
-                                    height={bucketSVGHeight}
-                                />
-                            ))}
-                        </clipPath>
-                    </defs>
-                </svg>
-            </div>
+          <div className="ff-waveform">
+            <svg
+              viewBox="0 0 100 100"
+              className="waveform-container"
+              preserveAspectRatio="none"
+              onClick={this.onSeek}
+            >
+            <rect className="waveform-bg" x="0" y="0" />
+              <rect
+                id="waveform-progress"
+                className="waveform-progress"
+                x="0"
+                y="0"
+                height="100"
+                width={progress || 0}
+              />
+            </svg>
+            <svg height="0" width="0">
+              <defs>
+                <clipPath id="waveform-mask">
+                  {this.state.bars.map(
+                    ({ bucketSVGHeight, bucketSVGWidth, index }) => (
+                      <rect
+                        key={index}
+                        x={bucketSVGWidth * index + spaceBetweenBars / 2.0}
+                        y={(100 - bucketSVGHeight) / 2.0}
+                        width={bucketSVGWidth - spaceBetweenBars}
+                        height={bucketSVGHeight}
+                      />
+                    )
+                  )}
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
         );
     }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactHowler from 'react-howler';
 import PropTypes from 'prop-types';
 
-import { PlayButton, Progress, Timer } from 'react-soundplayer/components';
+import { PlayButton, Timer } from 'react-soundplayer/components';
 
 import Waveform from './components/waveform-component';
 
@@ -18,6 +18,7 @@ class AudioPlayer extends Component {
             speedup: false,
             loadErr: false
         };
+        this.seek = this.seek.bind(this);
     }
 
     seek(secs, play) {
@@ -99,6 +100,8 @@ class AudioPlayer extends Component {
                     <Waveform
                         mp3url={mp3url}
                         progress={((currentTime || 0) / (duration || 1)) * 100 || 0}
+                        duration={duration}
+                        onSeekTrack={(ts) => this.seek(ts * duration)}
                     />
                     <Timer
                         className={"timer"}
