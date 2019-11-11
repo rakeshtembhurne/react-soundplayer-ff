@@ -1,23 +1,25 @@
 import React from 'react';
 
-import './wawelength.styles.css';
+import './waveform.styles.css';
 
-const DEFAULT_MP3 =
-    "https://parse-server-ff.s3.amazonaws.com/ae5992f0f5bb1f259bafa41b3771e3bb_call12565815456dwwwwww795896232www-01b59bd3.mp3";
 const NUMBER_OF_BUCKETS = 100;
 const SPACE_BETWEEN_BARS = 0.2;
 
-class Wawelength extends React.Component {
+class Waveform extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            bars: [],
+            bars: []
         }
     }
 
     componentDidMount() {
         this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-        fetch(DEFAULT_MP3)
+        let { mp3url, numberOfBuckets } = this.props;
+        if (!numberOfBuckets) {
+            numberOfBuckets = NUMBER_OF_BUCKETS;
+        }
+        fetch(mp3url)
             .then(response => response.arrayBuffer())
             .then(audioData => {
                 this.audioCtx.decodeAudioData(
@@ -25,10 +27,10 @@ class Wawelength extends React.Component {
                     buffer => {
                         let decodedAudioData = buffer.getChannelData(0);
                         let bucketDataSize = Math.floor(
-                            decodedAudioData.length / NUMBER_OF_BUCKETS
+                            decodedAudioData.length / numberOfBuckets
                         );
                         let buckets = [];
-                        for (var i = 0; i < NUMBER_OF_BUCKETS; i++) {
+                        for (var i = 0; i < numberOfBuckets; i++) {
                             let startingPoint = i * bucketDataSize;
                             let endingPoint =
                                 i * bucketDataSize + bucketDataSize;
@@ -47,10 +49,14 @@ class Wawelength extends React.Component {
                             index
                         }))
                         this.setState(state => ({...state, bars}))
+
+                        // FIXME: Only for debugging
+                        const waweforms = bars.map(bar => bar.bucketSVGHeight);
+                        console.log({waweforms});
                     },
                     e => {
                         // callback for any errors with decoding audio data
-                        console.log("Error with decoding audio data" + e.err);
+                        console.log(e);
                     }
                 );
             })
@@ -58,26 +64,28 @@ class Wawelength extends React.Component {
     }
 
     render() {
+        let { spaceBetweenBars, progress } = this.props;
+        if (!spaceBetweenBars) {
+            spaceBetweenBars = SPACE_BETWEEN_BARS;
+        }
         return (
-            <div className="wawelengh-container">
+            <div className="ff-waveform">
                 <svg viewBox="0 0 100 100" className="waveform-container" preserveAspectRatio="none">
                     <rect className="waveform-bg" x="0" y="0" />
-                    <rect id="waveform-progress" className="waveform-progress" x="0" y="0" height="100" width="0"/>
+                    <rect id="waveform-progress" className="waveform-progress" x="0" y="0" height="100" width={progress || 0}/>
                 </svg>
                 <svg height="0" width="0">
                     <defs>
                         <clipPath id="waveform-mask">
-                            {this.state.bars.map(
-                        ({ bucketSVGHeight, bucketSVGWidth, index }) => (
-                            <rect
-                                key={index}
-                                x={ bucketSVGWidth * index + SPACE_BETWEEN_BARS / 2.0 }
-                                y={(100 - bucketSVGHeight) / 2.0}
-                                width={bucketSVGWidth - SPACE_BETWEEN_BARS}
-                                height={bucketSVGHeight}
-                            />
-                        )
-                    )}
+                            {this.state.bars.map( ({ bucketSVGHeight, bucketSVGWidth, index }) => (
+                                <rect
+                                    key={index}
+                                    x={ bucketSVGWidth * index + spaceBetweenBars / 2.0 }
+                                    y={(100 - bucketSVGHeight) / 2.0}
+                                    width={bucketSVGWidth - spaceBetweenBars}
+                                    height={bucketSVGHeight}
+                                />
+                            ))}
                         </clipPath>
                     </defs>
                 </svg>
@@ -86,4 +94,4 @@ class Wawelength extends React.Component {
     }
 }
 
-export default Wawelength;
+export default Waveform;

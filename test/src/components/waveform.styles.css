@@ -1,15 +1,13 @@
-.wawelengh-container {
-    margin: 0;
-    padding: 0 1em;
-    font-family: sans-serif;
+.ff-waveform {
+    height: 58px;
     display: flex;
-    flex-direction: column;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
 }
 .waveform-container {
     max-width: 100%;
-    width: 800px;
+    width: 100%;
 }
 .waveform-bg {
     clip-path: url("#waveform-mask");
@@ -19,5 +17,5 @@
 }
 .waveform-progress {
     clip-path: url("#waveform-mask");
-    fill: #44bc75;
+    fill: #ffffff;
 }

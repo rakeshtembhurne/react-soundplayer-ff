@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 
 import { PlayButton, Progress, Timer } from 'react-soundplayer/components';
 
+import Waveform from './components/waveform-component';
+
 const DEFAULT_DURATION = 456.1495; // have to use this become modifying the audio file breaks 2x speed
 const DEFAULT_MP3 = "https://parse-server-ff.s3.amazonaws.com/ae5992f0f5bb1f259bafa41b3771e3bb_call12565815456dwwwwww795896232www-01b59bd3.mp3";
 
@@ -77,6 +79,7 @@ class AudioPlayer extends Component {
         let { playing, currentTime, duration, speedup, loadErr } = this.state;
         if (this.isObject(currentTime)) currentTime = 0;
         if (mp3url == DEFAULT_MP3) duration = DEFAULT_DURATION;
+
         return (
             <div className="ff-audio">
                 {duration != null ? <div className="flex flex-center px2 relative z1">
@@ -93,13 +96,10 @@ class AudioPlayer extends Component {
                             <img className={speedup ? 'audio-speedup' : ""} src="/pane/speedup.svg" height={35} />
                         </button>
                     </div>
-                    <Progress
-                        className="flex-auto bg-darken-3 rounded"
-                        innerClassName="rounded-left bg-white"
-                        value={((currentTime || 0) / (duration || 1)) * 100 || 0}
-                        onSeekTrack={(ts) => this.seek(ts * duration)}
+                    <Waveform
+                        mp3url={mp3url}
+                        progress={((currentTime || 0) / (duration || 1)) * 100 || 0}
                     />
-
                     <Timer
                         className={"timer"}
                         duration={duration} // in seconds
@@ -118,6 +118,8 @@ class AudioPlayer extends Component {
                         ref={(ref) => (this.player = ref)}
                     />
                 </div>
+
+
             </div>
         );
     }
