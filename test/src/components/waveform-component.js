@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
 import './waveform.styles.css';
 
@@ -118,5 +119,12 @@ class Waveform extends React.Component {
         );
     }
 }
+
+Waveform.propTypes = {
+  mp3url: PropTypes.string.isRequired,
+  progress: PropTypes.number.isRequired,
+  onSeekTrack: PropTypes.func.isRequired,
+  duration: PropTypes.number
+};
 
 export default Waveform;
